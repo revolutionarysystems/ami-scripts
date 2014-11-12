@@ -1,4 +1,6 @@
-f [ ! -z "$1" ]
+#!/bin/bash
+date
+if [ ! -z "$1" ]
 then
     data=`cat $1`
 else

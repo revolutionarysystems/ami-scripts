@@ -2,9 +2,11 @@
 date
 rm update-route53.ip
 accountId="$1"
-if [ ! -z "$2" ]
+puppethost="$2"
+echo puppethost = $puppethost
+if [ ! -z "$3" ]
 then
-    data=`cat $2`
+    data=`cat $3`
 else
     data=$(curl http://169.254.169.254/latest/user-data)
 fi
@@ -26,6 +28,9 @@ echo topic = $topic
 echo $alias > /etc/hostname
 service hostname start
 echo 127.0.0.1 $alias >> /etc/hosts
+puppetip=$(host $puppethost | grep address | cut -f4 -d\ ) 
+echo puppetip = $puppetip
+echo $puppetip puppet >> /etc/hosts
 service puppet stop
 apt-get update
 puppet agent -t

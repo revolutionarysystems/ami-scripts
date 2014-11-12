@@ -33,11 +33,14 @@ TYPE="A"
 
 PRIVATE="private"
 
+PRIVATEIP=`curl -s http://instance-data/latest/meta-data/local-ipv4`
+PUBLICIP=`curl -s http://instance-data/latest/meta-data/public-ipv4`
+
 if [ "$IPTYPE" == "$PRIVATE" ]
 then
-    IP=`curl -s http://instance-data/latest/meta-data/local-ipv4`
+    IP=$PRIVATEIP
 else
-    IP=`curl -s http://instance-data/latest/meta-data/public-ipv4`
+    IP=$PUBLICIP
 fi
 
 function valid_ip()
@@ -79,7 +82,7 @@ else
 
     # Create health check
     RID=`uuidgen`
-    aws route53 create-health-check --caller-reference $RID --health-check-config IPAddress=$IP,Port=$HCPORT,Type=$HCTYPE | grep "\"Id\":" | cut -f4 -d \" > update-route53.hcid
+    aws route53 create-health-check --caller-reference $RID --health-check-config IPAddress=$PUBLICIP,Port=$HCPORT,Type=$HCTYPE | grep "\"Id\":" | cut -f4 -d \" > update-route53.hcid
     HCID=`cat update-route53.hcid`
     echo HCID = $HCID
 

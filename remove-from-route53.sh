@@ -12,10 +12,9 @@ COMMENT="Auto removing @ `date`"
 # Change to AAAA if using an IPv6 address
 TYPE="A"
 
-
-
 IP=`cat update-route53.ip`
 HOSTNAME=`hostname`
+HCID=`cat update-route53.hcid`
 
 # Fill a temp file with valid JSON
 TMPFILE=$(mktemp /tmp/temporary-file.XXXXXXXX)
@@ -36,7 +35,8 @@ cat > ${TMPFILE} << EOF
         "Type":"$TYPE",
         "TTL": 300,
   "SetIdentifier": "$HOSTNAME",
-"Weight": 1
+"Weight": 1,
+"HealthCheckId": "$HCID"
 }
       }
   ]
@@ -48,6 +48,8 @@ aws route53 change-resource-record-sets \
     --hosted-zone-id $ZONEID \
     --change-batch file://"$TMPFILE"
 echo ""
+
+aws route53 delete-health-check --health-check-id $HCID
 
 # Clean up
 rm $TMPFILE

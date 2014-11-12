@@ -64,6 +64,13 @@ if grep -Fxq "$IP" "$IPFILE"; then
     exit 0
 else
     echo "IP has changed to $IP"
+
+    # Create health check
+    RID=`uuidgen`
+    aws route53 create-health-check --caller-reference $RID --health-check-config IPAddress=$IP,Port=80,Type=HTTP | grep "\"Id\":" | cut -f4 -d \" > update-route53.hcid
+    HCID=`cat update-route53.hcid`
+
+
     # Fill a temp file with valid JSON
     TMPFILE=$(mktemp /tmp/temporary-file.XXXXXXXX)
     cat > ${TMPFILE} << EOF
@@ -82,7 +89,8 @@ else
             "Type":"$TYPE",
             "TTL":$TTL,
             "SetIdentifier": "$HOSTNAME",
-            "Weight": 1
+            "Weight": 1,
+	    "HealthCheckId": "$HCID"
           }
         }
       ]

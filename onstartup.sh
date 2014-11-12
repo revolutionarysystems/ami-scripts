@@ -1,5 +1,6 @@
 #!/bin/bash
 date
+rm update-route53.ip
 if [ ! -z "$1" ]
 then
     data=`cat $1`
@@ -7,7 +8,7 @@ else
     data=$(curl http://169.254.169.254/latest/user-data)
 fi
 echo data = $data
-alias=$(echo $data | cut -f1 -d\|)
+alias=$(echo $data | cut -f1 -d\|)-$(uuidgen)
 echo alias = $alias
 puppetmaster=$(echo $data | cut -f2 -d\|)
 echo puppetmaster = $puppetmaster

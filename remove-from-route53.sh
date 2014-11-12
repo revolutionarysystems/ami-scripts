@@ -51,6 +51,8 @@ echo ""
 
 aws route53 delete-health-check --health-check-id $HCID
 
+aws cloudwatch delete-alarms --alarm-names $HOSTNAME-hc --region us-east-1
+
 # Clean up
 rm $TMPFILE
 

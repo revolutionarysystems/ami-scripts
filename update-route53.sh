@@ -17,6 +17,12 @@ HCTYPE="$4"
 # The port to perform the health check on
 HCPORT="$5"
 
+# The aws account id
+ACCOUNTID="$6"
+
+# The sns topic to alert on failed health check
+TOPIC="$7"
+
 # More advanced options below
 # The Time-To-Live of this recordset
 TTL=300
@@ -108,6 +114,8 @@ EOF
         --hosted-zone-id $ZONEID \
         --change-batch file://"$TMPFILE"
     echo ""
+
+    aws cloudwatch put-metric-alarm --alarm-name $HOSTNAME-hc --metric-name HealthCheckStatus --dimensions Name=HealthCheckId,Value=$HCID --namespace "AWS/Route53" --statistic Minimum --period 60 --evaluation-periods 1 --threshold 1 --comparison-operator LessThanThreshold --region us-east-1 --alarm-actions arn:aws:sns:us-east-1:$ACCOUNTID:$TOPIC
 
     # Clean up
     rm $TMPFILE

@@ -58,7 +58,7 @@ if [ ! -f "$IPFILE" ]
     then
     touch "$IPFILE"
 fi
-f grep -Fxq "$IP" "$IPFILE"; then
+if grep -Fxq "$IP" "$IPFILE"; then
     # code if found
     echo "IP is still $IP"
     exit 0

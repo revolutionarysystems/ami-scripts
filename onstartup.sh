@@ -18,6 +18,10 @@ domain=$(echo $data | cut -f4 -d\|)
 echo domain = $domain
 ipType=$(echo $data | cut -f5 -d\|)
 echo ipType = $ipType
+hcType=$(echo $data | cut -f6 -d\|)
+echo hcType = $hcType
+hcPort=$(echo $data | cut -f7 -d\|)
+echo hcPort = $hcPort
 echo $alias > /etc/hostname
 service hostname start
 echo 127.0.0.1 $alias >> /etc/hosts
@@ -28,5 +32,5 @@ puppet agent -t
 service puppet start
 if [ ! -z "$zoneId" ]
 then
-    ./update-route53.sh $zoneId $domain $ipType
+    ./update-route53.sh $zoneId $domain $ipType $hcType $hcPort
 fi

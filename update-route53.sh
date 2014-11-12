@@ -11,6 +11,12 @@ RECORDSET="$2"
 # The type of IP. private or public
 IPTYPE="$3"
 
+# The type if health check
+HCTYPE="$4"
+
+# The port to perform the health check on
+HCPORT="$5"
+
 # More advanced options below
 # The Time-To-Live of this recordset
 TTL=300
@@ -67,9 +73,9 @@ else
 
     # Create health check
     RID=`uuidgen`
-    aws route53 create-health-check --caller-reference $RID --health-check-config IPAddress=$IP,Port=80,Type=HTTP | grep "\"Id\":" | cut -f4 -d \" > update-route53.hcid
+    aws route53 create-health-check --caller-reference $RID --health-check-config IPAddress=$IP,Port=$HCPORT,Type=$HCTYPE | grep "\"Id\":" | cut -f4 -d \" > update-route53.hcid
     HCID=`cat update-route53.hcid`
-
+    echo HCID = $HCID
 
     # Fill a temp file with valid JSON
     TMPFILE=$(mktemp /tmp/temporary-file.XXXXXXXX)

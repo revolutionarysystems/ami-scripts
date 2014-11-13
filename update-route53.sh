@@ -118,7 +118,7 @@ EOF
         --change-batch file://"$TMPFILE"
     echo ""
 
-    aws cloudwatch put-metric-alarm --alarm-name $HOSTNAME-hc --metric-name HealthCheckStatus --dimensions Name=HealthCheckId,Value=$HCID --namespace "AWS/Route53" --statistic Minimum --period 60 --evaluation-periods 3 --threshold 1 --comparison-operator LessThanThreshold --region us-east-1 --alarm-actions arn:aws:sns:us-east-1:$ACCOUNTID:$TOPIC
+    aws cloudwatch put-metric-alarm --alarm-name $HOSTNAME-hc --metric-name HealthCheckStatus --dimensions Name=HealthCheckId,Value=$HCID --namespace "AWS/Route53" --statistic Minimum --period 60 --evaluation-periods 5 --threshold 1 --comparison-operator LessThanThreshold --region us-east-1 --alarm-actions arn:aws:sns:us-east-1:$ACCOUNTID:$TOPIC
 
     # Clean up
     rm $TMPFILE

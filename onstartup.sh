@@ -16,23 +16,34 @@ then
     echo Invalid user data
     exit 1
 fi
-alias=$(echo $data | cut -f1 -d\|)-$(uuidgen)
-echo alias = $alias
-zoneId=$(echo $data | cut -f2 -d\|)
-echo zoneId = $zoneId
-domain=$(echo $data | cut -f3 -d\|)
-echo domain = $domain
-ipType=$(echo $data | cut -f4 -d\|)
-echo ipType = $ipType
-hcType=$(echo $data | cut -f5 -d\|)
-echo hcType = $hcType
-hcPort=$(echo $data | cut -f6 -d\|)
-echo hcPort = $hcPort
-topic=$(echo $data | cut -f7 -d\|)
-echo topic = $topic
-echo $alias > /etc/hostname
-service hostname start
-echo 127.0.0.1 $alias >> /etc/hosts
+while read -r line; do
+    echo $line
+    if [[ $line == alias=* ]];then
+        alias=$(echo $line | cut -f2 -d=)-$(uuidgen)
+        echo alias = $alias
+        echo $alias > /etc/hostname
+        service hostname start
+        echo 127.0.0.1 $alias >> /etc/hosts
+    fi
+    if [[ $line == domain=* ]];then
+        domainSettings=$(echo $line | cut -f2 -d=)
+        echo domain settings = $domainSettings
+        zoneId=$(echo $domainSettings | cut -f1 -d\|)
+        echo zoneId = $zoneId
+        domain=$(echo $domainSettings | cut -f2 -d\|)
+        echo domain = $domain
+        ipType=$(echo $domainSettings | cut -f3 -d\|)
+        echo ipType = $ipType
+        hcType=$(echo $domainSettings | cut -f4 -d\|)
+        echo hcType = $hcType
+        hcPort=$(echo $domainSettings | cut -f5 -d\|)
+        echo hcPort = $hcPort
+        topic=$(echo $domainSettings | cut -f6 -d\|)
+        echo topic = $topic
+        ./update-route53.sh $zoneId $domain $ipType $hcType $hcPort $accountId $topic
+    fi
+done <<< "$data"
+
 puppetip=$(host $puppethost | grep address | cut -f4 -d\ ) 
 echo puppetip = $puppetip
 echo $puppetip puppet >> /etc/hosts
@@ -40,7 +51,4 @@ service puppet stop
 apt-get update
 puppet agent -t
 service puppet start
-if [ ! -z "$zoneId" ]
-then
-    ./update-route53.sh $zoneId $domain $ipType $hcType $hcPort $accountId $topic
-fi
+

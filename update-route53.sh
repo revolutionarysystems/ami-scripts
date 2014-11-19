@@ -125,4 +125,4 @@ EOF
 
 
 # All Done - cache the IP address for next time
-echo "$IP" >> "$IPFILE"
+echo "$ZONEID|$RECORDSET|$IP" >> "$IPFILE"

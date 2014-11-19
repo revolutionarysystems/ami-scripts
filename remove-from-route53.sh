@@ -2,11 +2,11 @@
 
 # Script taken from http://willwarren.com/2014/07/03/roll-dynamic-dns-service-using-amazon-route53/
 
-# Hosted Zone ID e.g. BJBK35SKMM9OE
-ZONEID="$1"
 
-# The CNAME you want to update e.g. hello.example.com
-RECORDSET="$2"
+
+
+
+
 
 COMMENT="Auto removing @ `date`"
 # Change to AAAA if using an IPv6 address
@@ -16,7 +16,9 @@ TYPE="A"
 HOSTNAME=`hostname`
 
 while read line1 && read -u 3 line2; do
-IP=$line1
+ZONEID=$(echo $line1 | cut -f1 -d\|)
+RECORDSET=$(echo $line1 | cut -f2 -d\|)
+IP=$(echo $line1 | cut -f3 -d\|)
 HCID=$line2
 echo Removing $IP with and Health Check $HCID
 

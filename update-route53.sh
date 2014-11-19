@@ -68,22 +68,22 @@ if ! valid_ip $IP; then
     exit 1
 fi
 
-# Check if the IP has changed
-if [ ! -f "$IPFILE" ]
-    then
-    touch "$IPFILE"
-fi
-if grep -Fxq "$IP" "$IPFILE"; then
-    # code if found
-    echo "IP is still $IP"
-    exit 0
-else
-    echo "IP has changed to $IP"
+
+
+
+
+
+
+
+
+
+
+
 
     # Create health check
     RID=`uuidgen`
-    aws route53 create-health-check --caller-reference $RID --health-check-config IPAddress=$PUBLICIP,Port=$HCPORT,Type=$HCTYPE | grep "\"Id\":" | cut -f4 -d \" > update-route53.hcid
-    HCID=`cat update-route53.hcid`
+    HCID=`aws route53 create-health-check --caller-reference $RID --health-check-config IPAddress=$PUBLICIP,Port=$HCPORT,Type=$HCTYPE | grep "\"Id\":" | cut -f4 -d \"`
+    echo $HCID >> update-route53.hcid
     echo HCID = $HCID
 
     # Fill a temp file with valid JSON
@@ -122,7 +122,7 @@ EOF
 
     # Clean up
     rm $TMPFILE
-fi
+
 
 # All Done - cache the IP address for next time
-echo "$IP" > "$IPFILE"
+echo "$IP" >> "$IPFILE"

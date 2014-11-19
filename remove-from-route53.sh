@@ -12,9 +12,13 @@ COMMENT="Auto removing @ `date`"
 # Change to AAAA if using an IPv6 address
 TYPE="A"
 
-IP=`cat update-route53.ip`
+
 HOSTNAME=`hostname`
-HCID=`cat update-route53.hcid`
+
+while read line1 && read -u 3 line2; do
+IP=$line1
+HCID=$line2
+echo Removing $IP with and Health Check $HCID
 
 # Fill a temp file with valid JSON
 TMPFILE=$(mktemp /tmp/temporary-file.XXXXXXXX)
@@ -56,4 +60,5 @@ aws cloudwatch delete-alarms --alarm-names $HOSTNAME-hc --region us-east-1
 # Clean up
 rm $TMPFILE
 
+done < update-route53.ip 3< update-route53.hcid
 

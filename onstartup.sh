@@ -1,6 +1,7 @@
 #!/bin/bash
 date
 rm update-route53.ip
+rm update-route53.hcid
 accountId="$1"
 puppethost="$2"
 echo puppethost = $puppethost

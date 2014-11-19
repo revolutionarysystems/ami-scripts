@@ -8,9 +8,14 @@ if [ ! -z "$3" ]
 then
     data=`cat $3`
 else
-    data=$(curl http://169.254.169.254/latest/user-data)
+    data=$(curl -s http://169.254.169.254/latest/user-data)
 fi
 echo data = $data
+if [[ $data != alias=* ]]
+then
+    echo Invalid user data
+    exit 1
+fi
 alias=$(echo $data | cut -f1 -d\|)-$(uuidgen)
 echo alias = $alias
 zoneId=$(echo $data | cut -f2 -d\|)

@@ -1,31 +1,27 @@
 #!/bin/bash
-date
+
 rm update-route53.ip
 rm update-route53.hcid
+
 accountId="$1"
-puppethost="$2"
-echo puppethost = $puppethost
-if [ ! -z "$3" ]
+
+if [ ! -z "$2" ]
 then
-    data=`cat $3`
+    data=`cat $2`
 else
     data=$(curl -s http://169.254.169.254/latest/user-data)
 fi
+
 echo data = $data
+
 if [[ $data != alias=* ]]
 then
     echo Invalid user data
     exit 1
 fi
+
 while read -r line; do
     echo $line
-    if [[ $line == alias=* ]];then
-        alias=$(echo $line | cut -f2 -d=)-$(uuidgen)
-        echo alias = $alias
-        echo $alias > /etc/hostname
-        service hostname start
-        echo 127.0.0.1 $alias >> /etc/hosts
-    fi
     if [[ $line == domain=* ]];then
         domainSettings=$(echo $line | cut -f2 -d=)
         echo domain settings = $domainSettings
@@ -45,11 +41,11 @@ while read -r line; do
     fi
 done <<< "$data"
 
-puppetip=$(host $puppethost | grep address | cut -f4 -d\ ) 
-echo puppetip = $puppetip
-echo $puppetip puppet >> /etc/hosts
-service puppet stop
-apt-get update
-puppet agent -t
-service puppet start
+
+
+
+
+
+
+
 
